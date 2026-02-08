@@ -1,0 +1,49 @@
+name: Deploy to Azure
+
+# Workflow käynnistyy kun:
+# 1. Pushaat main-branchiin
+# 2. Käynnistät manuaalisesti (workflow_dispatch)
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'              # .NET version
+  AZURE_WEBAPP_NAME: 'Xamkjulkaisu'  # Vaihda tähän oma nimesi!
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy to Azure
+    
+    steps:
+    # 1. Checkout koodi GitHubista
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # 2. Asenna .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    # 3. Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    # 4. Build
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    # 5. Publish
+    - name: Publish
+      run: dotnet publish SimpleExample.API/SimpleExample.API.csproj -c Release -o ./publish
+    
+    # 6. Deploy to Azure
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./publish
