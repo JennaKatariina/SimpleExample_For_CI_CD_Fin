@@ -26,7 +26,7 @@ public class UserTests
         Action act = () => new User("", "Meikäläinen", "test@test.com");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
+        act.Should().Throw<ArgumentException>()
            .WithMessage("*Etunimi ei voi olla tyhjä*");
     }
 
