@@ -28,13 +28,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     public async Task<T> AddAsync(T entity)
     {
+        // EI aseteta Id:tä, FirstName, LastName, Email - entity on jo validi!
         entity.Id = Guid.NewGuid();
         entity.CreatedAt = DateTime.UtcNow;
         entity.UpdatedAt = DateTime.UtcNow;
-        
+
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
-        
+
         return entity;
     }
 

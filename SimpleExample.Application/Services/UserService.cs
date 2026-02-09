@@ -27,12 +27,12 @@ public class UserService : IUserService
 
     public async Task<UserDto> CreateAsync(CreateUserDto createUserDto)
     {
-        User user = new User
-        {
-            FirstName = createUserDto.FirstName,
-            LastName = createUserDto.LastName,
-            Email = createUserDto.Email
-        };
+        // Konstruktori validoi automaattisesti!
+        User user = new User(
+            createUserDto.FirstName,
+            createUserDto.LastName,
+            createUserDto.Email
+        );
 
         User createdUser = await _userRepository.AddAsync(user);
         return MapToDto(createdUser);
@@ -46,9 +46,9 @@ public class UserService : IUserService
             return null;
         }
 
-        user.FirstName = updateUserDto.FirstName;
-        user.LastName = updateUserDto.LastName;
-        user.Email = updateUserDto.Email;
+        // UpdateBasicInfo ja UpdateEmail validoivat automaattisesti!
+        user.UpdateBasicInfo(updateUserDto.FirstName, updateUserDto.LastName);
+        user.UpdateEmail(updateUserDto.Email);
 
         User updatedUser = await _userRepository.UpdateAsync(user);
         return MapToDto(updatedUser);
